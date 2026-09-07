@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "msca"
+version = "0.1.0"
+description = "Multi-Stream Cross-Attention for carbon-emission regression from satellite proxy data"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Your Name", email = "you@example.com" }]
+keywords = ["deep-learning", "remote-sensing", "cross-attention", "carbon-emissions"]
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "torch>=2.1,<3.0",
+    "numpy>=1.24,<3.0",
+    "pandas>=2.0,<3.0",
+    "omegaconf>=2.3,<3.0",
+    "tqdm>=4.65",
+]
+
+[project.optional-dependencies]
+wandb = ["wandb>=0.16"]
+dev = ["pytest>=7.4", "pytest-cov>=4.1", "ruff>=0.4", "mypy>=1.8", "pre-commit>=3.5"]
+
+[project.urls]
+Homepage = "https://github.com/your-org/ms-ca"
+Issues = "https://github.com/your-org/ms-ca/issues"
+
+# The src/ layout means the installed package is the one that gets imported --
+# you cannot accidentally import from the working directory and pass tests
+# against code that would not ship.
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 90
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true

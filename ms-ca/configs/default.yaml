@@ -1,0 +1,66 @@
+# ==============================================================================
+# MS-CA default configuration
+# ==============================================================================
+# Every key here is validated against the dataclass schema in src/msca/config.py.
+# Override any of them from the command line:
+#
+#   python scripts/train.py --config configs/default.yaml \
+#       train.epochs=100 optim.lr=1e-4 data.npz_paths=[data/jan.npz]
+# ==============================================================================
+
+seed: 42
+device: null        # null -> auto-detect CUDA, else "cuda:0" / "cpu"
+
+data:
+  # Set exactly ONE of these two.
+  npz_paths: null            # e.g. [data/2023_01.npz, data/2023_02.npz]
+  tensor_index_csv: null     # e.g. data/tensor_index.csv (needs a 'tensor_path' column)
+
+  crop_size: 16              # must match model.img_size
+
+  # Random 70/15/15 split. The grids are pre-averaged, so there is no spatial
+  # autocorrelation argument for a geographic split.
+  val_ratio: 0.15
+  test_ratio: 0.15
+
+  augment: true              # synchronized D4 transforms, TRAIN loader only
+  num_workers: 4
+  pin_memory: true
+
+model:
+  img_size: [16, 16]
+  patch_size: 4              # -> 4x4 = 16 tokens per stream
+  embed_dim: 128
+  encoder_depth: 2
+  num_heads: 4               # used by ViT self-attention AND cross-attention fusion
+  dropout: 0.1
+  # Fixed by the data. Stream A = NO2/SO2/CO. Stream B = Nightlight/Urban
+  # Fraction/Power Plant/Fossil Capacity (population excluded). Do not change.
+  in_channels_a: 3
+  in_channels_b: 4
+
+optim:
+  lr: 3.0e-4
+  weight_decay: 0.05
+  warmup_epochs: 5.0         # may be fractional
+  grad_clip: 1.0             # <= 0 disables
+  cosine_cycles: 3           # cosine warm restarts after warmup
+
+train:
+  epochs: 50
+  batch_size: 32
+  use_amp: false
+  log_every: 50              # steps between W&B step-level logs
+  output_dir: outputs/checkpoints
+  resume_from: null          # path to checkpoint_latest.pth
+
+eval:
+  checkpoint: null           # path to best_model.pth
+  batch_size: 32
+  split_file: null           # <output_dir>/split_indices.json -- strongly preferred
+
+logging:
+  use_wandb: true            # false -> console only
+  project: ms-ca-regression
+  entity: null
+  run_name: null

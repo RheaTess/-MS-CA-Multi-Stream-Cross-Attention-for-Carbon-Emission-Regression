@@ -1,0 +1,29 @@
+# ==============================================================================
+# Example experiment override: a smaller, faster ViT.
+# Only the keys that DIFFER from configs/default.yaml belong here.
+#
+#   python scripts/train.py --config configs/experiments/vit_small.yaml \
+#       data.npz_paths=[data/2023_01.npz]
+#
+# Note: OmegaConf merges this on top of the schema defaults, not on top of
+# default.yaml. Keep experiment files self-contained for the keys they need, or
+# merge explicitly in code if you want inheritance.
+# ==============================================================================
+
+seed: 42
+
+model:
+  img_size: [16, 16]
+  patch_size: 4
+  embed_dim: 64
+  encoder_depth: 1
+  num_heads: 4
+  dropout: 0.1
+
+train:
+  epochs: 20
+  batch_size: 64
+  output_dir: outputs/vit_small
+
+logging:
+  run_name: vit-small-d1-e64
